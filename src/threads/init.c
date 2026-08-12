@@ -21,7 +21,9 @@
 #include "threads/malloc.h"
 #include "threads/palloc.h"
 #include "threads/pte.h"
+#include "threads/shell.h"
 #include "threads/thread.h"
+#include "threads/vaddr.h" /*Add the Virtual Address Header*/
 #ifdef USERPROG
 #include "userprog/process.h"
 #include "userprog/exception.h"
@@ -69,6 +71,7 @@ static void usage (void);
 static void locate_block_devices (void);
 static void locate_block_device (enum block_type, const char *name);
 #endif
+
 
 int pintos_init (void) NO_RETURN;
 
@@ -133,7 +136,7 @@ pintos_init (void)
     /* Run actions specified on kernel command line. */
     run_actions (argv);
   } else {
-    // TODO: no command line passed to kernel. Run interactively 
+    shell_run ();
   }
 
   /* Finish up. */
