@@ -109,6 +109,8 @@ struct thread
    Controlled by kernel command-line option "-o mlfqs". */
 extern bool thread_mlfqs;
 
+void thread_test_preemption(void);
+
 void thread_init (void);
 void thread_start (void);
 
@@ -124,6 +126,9 @@ void thread_unblock (struct thread *);
 struct thread *thread_current (void);
 tid_t thread_tid (void);
 const char *thread_name (void);
+
+bool thread_priority_comparator(const struct list_elem *a,const struct list_elem *b,void *aux);
+void thread_test_preemption (void);
 
 void thread_exit (void) NO_RETURN;
 void thread_yield (void);

@@ -71,6 +71,27 @@ static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
 
+/*comparator to order threads by priority*/
+bool thread_priority_comparator(const struct list_elem *a,
+  const struct list_elem *b,
+  void *aux UNUSED)
+{
+  const struct thread *ta=list_entry(a,struct thread,elem);
+  const struct thread *tb=list_entry(b,struct thread,elem);
+  return ((ta->priority)>(tb->priority));
+}
+
+/*yields current thread if a higher priority thread is waiting in ready_list*/
+void thread_test_preemption(void)
+{
+  if (!intr_context() && !list_empty(&ready_list))
+    {
+      struct thread *highest=list_entry(list_front(&ready_list),struct thread,elem);
+      if((highest->priority) > (thread_current()->priority))
+        thread_yield ();
+    }
+}
+
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
    general and it is possible in this case only because loader.S
@@ -201,6 +222,9 @@ thread_create (const char *name, int priority,
   /* Add to run queue. */
   thread_unblock (t);
 
+  /*checks if the newly created thread has higher priority than current one*/
+  thread_test_preemption ();
+
   return tid;
 }
 
@@ -237,7 +261,8 @@ thread_unblock (struct thread *t)
 
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
-  list_push_back (&ready_list, &t->elem);
+  // list_push_back (&ready_list, &t->elem);
+  list_insert_ordered(&ready_list,&t->elem,thread_priority_comparator,NULL); /*add to ordered list*/
   t->status = THREAD_READY;
   intr_set_level (old_level);
 }
@@ -308,7 +333,8 @@ thread_yield (void)
 
   old_level = intr_disable ();
   if (cur != idle_thread) 
-    list_push_back (&ready_list, &cur->elem);
+    // list_push_back (&ready_list, &cur->elem);
+    list_insert_ordered(&ready_list,&cur->elem,thread_priority_comparator,NULL); /*add to oredered list*/
   cur->status = THREAD_READY;
   schedule ();
   intr_set_level (old_level);
@@ -336,6 +362,7 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
+  thread_test_preemption();
 }
 
 /* Returns the current thread's priority. */
