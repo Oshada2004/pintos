@@ -95,6 +95,11 @@ struct thread
 
     int64_t wakeup_tick;   /*tick at which this thread should wake up*/
 
+    int base_priority;                  /*base priority without donations*/
+    struct lock *wait_on_lock;          /*lock the thread is currently waiting for*/
+    struct list donations;              /*list of donor threads*/
+    struct list_elem donation_elem;     /*element for holder's donations list*/
+
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
@@ -130,6 +135,8 @@ const char *thread_name (void);
 bool thread_priority_comparator(const struct list_elem *a,const struct list_elem *b,void *aux);
 void thread_test_preemption (void);
 
+bool thread_donation_priority_comparator(const struct list_elem *a,const struct list_elem *b,void *aux);
+
 void thread_exit (void) NO_RETURN;
 void thread_yield (void);
 
@@ -144,5 +151,9 @@ int thread_get_nice (void);
 void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
+
+void thread_update_priority(struct thread *t);
+void thread_donate_priority(void);
+void thread_remove_lock_donation(struct lock *lock);
 
 #endif /* threads/thread.h */

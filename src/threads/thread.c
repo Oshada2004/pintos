@@ -20,6 +20,8 @@
    of thread.h for details. */
 #define THREAD_MAGIC 0xcd6abf4b
 
+#define MAX_DONATION_DEPTH 8 /*nested donation limit*/
+
 /* List of processes in THREAD_READY state, that is, processes
    that are ready to run but not actually running. */
 static struct list ready_list;
@@ -90,6 +92,69 @@ void thread_test_preemption(void)
       if((highest->priority) > (thread_current()->priority))
         thread_yield ();
     }
+}
+
+/*comparator to order donations list by donor priority*/
+bool thread_donation_priority_comparator(const struct list_elem *a,
+  const struct list_elem *b,
+  void *aux UNUSED)
+{
+  const struct thread *ta=list_entry(a,struct thread,donation_elem);
+  const struct thread *tb=list_entry(b,struct thread,donation_elem);
+  return ((ta->priority)>(tb->priority));
+}
+
+/*computes effective priority of thread based on its base_priority and donors in its donations list*/
+void thread_update_priority(struct thread *t)
+{
+  int max_p=(t->base_priority);
+
+  if(!list_empty(&t->donations)){
+    list_sort(&t->donations,thread_donation_priority_comparator,NULL);
+    struct thread *donor=list_entry(list_front(&t->donations),struct thread,donation_elem);
+    if ((donor->priority)>max_p) max_p=(donor->priority);
+  }
+  t->priority=max_p;
+}
+
+/*propagates the running thread's priority to all threads holding locks in the dependency chain*/
+void thread_donate_priority(void)
+{
+  struct thread *cur=thread_current ();
+  struct lock *l=cur->wait_on_lock;
+  int depth=0;
+
+  while (l!=NULL && depth<MAX_DONATION_DEPTH){
+    if(l->holder==NULL) break;
+
+    struct thread *holder=l->holder;
+    if((holder->priority)<(cur->priority)){
+      holder->priority=cur->priority;
+      /*if the holder is in ready_list, sort ready_list*/
+      if(holder->status==THREAD_READY){
+        list_remove(&holder->elem);
+        list_insert_ordered(&ready_list,&holder->elem,thread_priority_comparator,NULL);
+      }
+    }
+
+    /*walk one step forward in the dependency chain*/
+    cur=holder;
+    l=cur->wait_on_lock;
+    depth++;
+  }
+}
+
+/*removes all threads from donations list whose wait_on_lock is LOCK*/
+void thread_remove_lock_donation(struct lock *lock)
+{
+  struct thread *cur=thread_current();
+  struct list_elem *e=list_begin(&cur->donations);
+
+  while(e!=list_end(&cur->donations)){
+    struct thread *donor=list_entry(e,struct thread,donation_elem);
+    if((donor->wait_on_lock)==lock) e=list_remove(e);
+    else e=list_next(e);
+  }
 }
 
 /* Initializes the threading system by transforming the code
@@ -361,7 +426,10 @@ thread_foreach (thread_action_func *func, void *aux)
 void
 thread_set_priority (int new_priority) 
 {
-  thread_current ()->priority = new_priority;
+  struct thread *cur=thread_current();
+  cur->base_priority=new_priority;
+  thread_update_priority(cur);
+
   thread_test_preemption();
 }
 
@@ -489,6 +557,11 @@ init_thread (struct thread *t, const char *name, int priority)
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
+
+  t->base_priority=priority;
+  t->wait_on_lock=NULL;
+  list_init (&t->donations);
+
   t->magic = THREAD_MAGIC;
 
   old_level = intr_disable ();
