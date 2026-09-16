@@ -22,6 +22,8 @@
 
 #define MAX_DONATION_DEPTH 8 /*nested donation limit*/
 
+static int32_t load_avg;
+
 /* List of processes in THREAD_READY state, that is, processes
    that are ready to run but not actually running. */
 static struct list ready_list;
@@ -120,6 +122,8 @@ void thread_update_priority(struct thread *t)
 /*propagates the running thread's priority to all threads holding locks in the dependency chain*/
 void thread_donate_priority(void)
 {
+  if(thread_mlfqs) return;
+
   struct thread *cur=thread_current ();
   struct lock *l=cur->wait_on_lock;
   int depth=0;
@@ -178,6 +182,8 @@ thread_init (void)
   lock_init (&tid_lock);
   list_init (&ready_list);
   list_init (&all_list);
+
+  load_avg=0;
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
@@ -426,6 +432,8 @@ thread_foreach (thread_action_func *func, void *aux)
 void
 thread_set_priority (int new_priority) 
 {
+  if(thread_mlfqs) return;
+
   struct thread *cur=thread_current();
   cur->base_priority=new_priority;
   thread_update_priority(cur);
@@ -440,35 +448,94 @@ thread_get_priority (void)
   return thread_current ()->priority;
 }
 
+void thread_mlfqs_calculate_priority(struct thread *t)
+{
+  if(t==idle_thread) return;
+
+  int32_t term1=INT_TO_FP(PRI_MAX);
+  int32_t term2=FP_DIV_INT(t->recent_cpu,4);
+  int32_t term3=INT_TO_FP(t->nice*2);
+  int32_t p=FP_TO_INT_NEAR(FP_SUB(FP_SUB(term1,term2),term3));
+
+  if(p < PRI_MIN) p=PRI_MIN;
+  if(p > PRI_MAX) p=PRI_MAX;
+
+  t->priority=p;
+}
+
+void
+thread_mlfqs_calculate_recent_cpu(struct thread *t)
+{
+  if(t==idle_thread) return;
+
+  int32_t load2=FP_MUL_INT(load_avg,2);
+  int32_t coeff=FP_DIV(load2,FP_ADD_INT(load2,1));
+  t->recent_cpu=FP_ADD_INT(FP_MUL(coeff,t->recent_cpu),t->nice);
+}
+
+void
+thread_mlfqs_update_load_avg_and_recent_cpu(void)
+{
+  int ready_threads=list_size(&ready_list);
+  if(thread_current()!=idle_thread) ready_threads++;
+
+  int32_t term1=FP_MUL(FP_DIV_INT(INT_TO_FP(59),60),load_avg);
+  int32_t term2=FP_MUL_INT(FP_DIV_INT(INT_TO_FP(1),60),ready_threads);
+  load_avg=FP_ADD(term1,term2);
+
+  struct list_elem *e;
+  for(e=list_begin(&all_list); e!=list_end(&all_list); e=list_next(e)){
+    struct thread *t=list_entry(e,struct thread,allelem);
+    thread_mlfqs_calculate_recent_cpu(t);
+  }
+}
+
+void
+thread_mlfqs_update_priorities(void)
+{
+  struct list_elem *e;
+  for(e=list_begin(&all_list); e!=list_end(&all_list); e=list_next(e)){
+    struct thread *t=list_entry(e,struct thread,allelem);
+    thread_mlfqs_calculate_priority(t);
+  }
+}
+
+void
+thread_mlfqs_increment_recent_cpu(void)
+{
+  if(thread_current()!=idle_thread)
+    thread_current()->recent_cpu = FP_ADD_INT(thread_current()->recent_cpu,1);
+}
+
 /* Sets the current thread's nice value to NICE. */
 void
-thread_set_nice (int nice UNUSED) 
+thread_set_nice (int new_nice) 
 {
-  /* Not yet implemented. */
+  struct thread *cur=thread_current();
+  cur->nice=new_nice;
+  thread_mlfqs_calculate_priority(cur);
+  thread_test_preemption();
 }
 
 /* Returns the current thread's nice value. */
 int
 thread_get_nice (void) 
 {
-  /* Not yet implemented. */
-  return 0;
+  return thread_current()->nice;
 }
 
 /* Returns 100 times the system load average. */
 int
 thread_get_load_avg (void) 
 {
-  /* Not yet implemented. */
-  return 0;
+  return FP_TO_INT_NEAR(FP_MUL_INT(load_avg,100));
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
 int
 thread_get_recent_cpu (void) 
 {
-  /* Not yet implemented. */
-  return 0;
+  return FP_TO_INT_NEAR(FP_MUL_INT(thread_current()->recent_cpu,100));
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
@@ -561,6 +628,22 @@ init_thread (struct thread *t, const char *name, int priority)
   t->base_priority=priority;
   t->wait_on_lock=NULL;
   list_init (&t->donations);
+
+  if(thread_mlfqs){
+    if(t==initial_thread){
+      t->nice=0;
+      t->recent_cpu=0;
+    }
+    else{
+      t->nice=thread_current()->nice;
+      t->recent_cpu=thread_current()->recent_cpu;
+    }
+    thread_mlfqs_calculate_priority(t);
+  }
+  else{
+    t->nice=0;
+    t->recent_cpu=0;
+  }
 
   t->magic = THREAD_MAGIC;
 

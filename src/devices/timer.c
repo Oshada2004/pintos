@@ -201,6 +201,14 @@ timer_interrupt (struct intr_frame *args UNUSED)
   ticks++;
   thread_tick ();
 
+  if(thread_mlfqs){
+    thread_mlfqs_increment_recent_cpu();
+
+    if(ticks%TIMER_FREQ==0) thread_mlfqs_update_load_avg_and_recent_cpu();
+
+    if(ticks%4==0) thread_mlfqs_update_priorities();
+  }
+
   while(!list_empty(&sleep_list))
     {
       struct list_elem *e=list_front(&sleep_list);

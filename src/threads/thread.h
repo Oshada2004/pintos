@@ -5,6 +5,8 @@
 #include <list.h>
 #include <stdint.h>
 
+#include "threads/fixedpoint.h"
+
 /* States in a thread's life cycle. */
 enum thread_status
   {
@@ -100,6 +102,9 @@ struct thread
     struct list donations;              /*list of donor threads*/
     struct list_elem donation_elem;     /*element for holder's donations list*/
 
+    int nice; /*values from -20 to 20*/
+    int32_t recent_cpu;
+
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
@@ -155,5 +160,11 @@ int thread_get_load_avg (void);
 void thread_update_priority(struct thread *t);
 void thread_donate_priority(void);
 void thread_remove_lock_donation(struct lock *lock);
+
+void thread_mlfqs_calculate_priority(struct thread *t);
+void thread_mlfqs_calculate_recent_cpu(struct thread *t);
+void thread_mlfqs_update_load_avg_and_recent_cpu(void);
+void thread_mlfqs_update_priorities(void);
+void thread_mlfqs_increment_recent_cpu(void);
 
 #endif /* threads/thread.h */
