@@ -629,10 +629,6 @@ init_thread (struct thread *t, const char *name, int priority)
   t->wait_on_lock=NULL;
   list_init (&t->donations);
 
-#ifdef USERPROG
-  t->exit_status = 0;
-#endif
-
   if(thread_mlfqs){
     if(t==initial_thread){
       t->nice=0;
