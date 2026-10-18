@@ -624,6 +624,8 @@ init_thread (struct thread *t, const char *name, int priority)
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
+  t->magic=THREAD_MAGIC;
+  t->exit_status=0;
 
   t->base_priority=priority;
   t->wait_on_lock=NULL;
