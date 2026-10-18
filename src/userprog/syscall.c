@@ -22,10 +22,31 @@ static bool is_valid_ptr(const void *uaddr){
   return uaddr!=NULL && is_user_vaddr(uaddr) && pagedir_get_page(cur->pagedir,uaddr)!=NULL;
 }
 
+static void validate_buffer(const void *uaddr,size_t size){
+  if(size==0) return;
+
+  if(uaddr==NULL) sys_exit(-1);
+
+  const uint8_t* byte_ptr=(const uint8_t*)uaddr;
+  for(size_t i=0; i<size; i++){
+    if(!is_valid_ptr(byte_ptr+i)) sys_exit(-1);
+  }
+}
+
+
+static void validate_string(const char* str){
+  if(str==NULL) sys_exit(-1);
+
+  while(true){
+    if(!is_valid_ptr(str)) sys_exit(-1);
+    if(*str=='\0') break;
+    str++;
+  }
+}
+
 static void
 syscall_handler (struct intr_frame *f UNUSED){
-
-  if(!is_valid_ptr(f->esp) || !is_valid_ptr(f->esp+3)) sys_exit(-1);
+  validate_buffer(f->esp,sizeof(int));
 
   int syscall_num=*(int*) f->esp;
 
@@ -35,19 +56,19 @@ syscall_handler (struct intr_frame *f UNUSED){
       break;
 
     case SYS_EXIT:
-      if(!is_valid_ptr(f->esp+4) || !is_valid_ptr(f->esp+7)) sys_exit(-1);
+      validate_buffer(f->esp+4,sizeof(int));
       sys_exit(*(int*) (f->esp+4));
       break;
 
     case SYS_WRITE:
       {
-        if(!is_valid_ptr(f->esp+4) || !is_valid_ptr(f->esp+15)) sys_exit(-1);
+        validate_buffer(f->esp+4,3*sizeof(int));
 
         int fd=*(int*) (f->esp+4);
         const void *buffer=*(const void **) (f->esp+8);
         unsigned size=*(unsigned*) (f->esp+12);
 
-        if(size>0 && (!is_valid_ptr(buffer) || !is_valid_ptr(buffer+size-1))) sys_exit(-1);
+        validate_buffer(buffer,size);
 
         if(fd==1){
           putbuf(buffer,size);
@@ -66,7 +87,7 @@ syscall_handler (struct intr_frame *f UNUSED){
 
 static void sys_exit(int status)
 {
-  struct thread* cur=thread_current();
+  struct thread*cur=thread_current();
   cur->exit_status=status;
   thread_exit();
 }
