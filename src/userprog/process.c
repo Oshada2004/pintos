@@ -104,7 +104,7 @@ start_process (void *file_name_)
 int
 process_wait (tid_t child_tid UNUSED) 
 {
-  while (true) thread_yield ();
+  while (thread_get_by_tid(child_tid)!=NULL) thread_yield ();
   return -1;
 }
 
@@ -214,7 +214,7 @@ struct Elf32_Phdr
 #define PF_W 2          /* Writable. */
 #define PF_R 4          /* Readable. */
 
-static bool setup_stack (void **esp);
+static bool setup_stack (void **esp, char* cmdline);
 static bool validate_segment (const struct Elf32_Phdr *, struct file *);
 static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
                           uint32_t read_bytes, uint32_t zero_bytes,
@@ -234,14 +234,22 @@ load (const char *file_name, void (**eip) (void), void **esp)
   bool success = false;
   int i;
 
+  char prog_name[128];
+  char *prog_name_token;
+  char *save_ptr;
+
   /* Allocate and activate page directory. */
   t->pagedir = pagedir_create ();
   if (t->pagedir == NULL) 
     goto done;
   process_activate ();
 
+  strlcpy(prog_name,file_name,sizeof prog_name);
+  prog_name_token=strtok_r(prog_name," ",&save_ptr);
+  if(prog_name_token==NULL) goto done;
+
   /* Open executable file. */
-  file = filesys_open (file_name);
+  file = filesys_open (prog_name_token);
   if (file == NULL) 
     {
       printf ("load: %s: open failed\n", file_name);
@@ -321,7 +329,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
     }
 
   /* Set up stack. */
-  if (!setup_stack (esp))
+  if (!setup_stack (esp,file_name))
     goto done;
 
   /* Start address. */
@@ -446,20 +454,53 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 /* Create a minimal stack by mapping a zeroed page at the top of
    user virtual memory. */
 static bool
-setup_stack (void **esp) 
+setup_stack (void **esp,char *cmdline)
 {
   uint8_t *kpage;
   bool success = false;
 
   kpage = palloc_get_page (PAL_USER | PAL_ZERO);
-  if (kpage != NULL) 
+  if (kpage != NULL)
     {
       success = install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true);
-      if (success)
+      if (success){
         *esp = PHYS_BASE;
+
+        char* token;
+        char* save_ptr;
+        char* argv[128];
+        int argc=0;
+
+        for(token=strtok_r(cmdline," ",&save_ptr); token!=NULL; token=strtok_r(NULL," ",&save_ptr)){
+          size_t len=strlen(token)+1;
+          *esp-=len;
+          memcpy(*esp,token,len);
+          argv[argc]=*esp;
+          argc++;
+        }
+
+        *esp=(void*)((uintptr_t)* esp & ~3);
+
+        *esp-=sizeof(char*);
+        *(char**) *esp=NULL;
+
+        for(int i=argc-1; i>=0; i--){
+          *esp-=sizeof(char*);
+          *(char**) *esp=argv[i];
+        }
+
+        char** argv_start=(char**) *esp;
+        *esp-=sizeof(char**);
+        *(char***) *esp=argv_start;
+
+        *esp-=sizeof(int);
+        *(int*) *esp=argc;
+        *esp-=sizeof(void*);
+        *(void**) *esp=NULL;
         
-      else
+      }else{
         palloc_free_page (kpage);
+      }
     }
   return success;
 }

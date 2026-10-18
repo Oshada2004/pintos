@@ -448,6 +448,23 @@ thread_get_priority (void)
   return thread_current ()->priority;
 }
 
+struct thread* thread_get_by_tid(tid_t tid){
+  enum intr_level old_level=intr_disable ();
+  struct list_elem *e;
+  struct thread *target=NULL;
+
+  for(e=list_begin(&all_list); e!=list_end(&all_list); e=list_next(e)){
+    struct thread* t=list_entry(e,struct thread,allelem);
+    if (t->tid==tid){
+      target=t;
+      break;
+    }
+  }
+
+  intr_set_level (old_level);
+  return target;
+}
+
 void thread_mlfqs_calculate_priority(struct thread *t)
 {
   if(t==idle_thread) return;
