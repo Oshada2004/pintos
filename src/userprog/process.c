@@ -17,6 +17,7 @@
 #include "threads/palloc.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
+#include "threads/thread.h"
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
@@ -116,6 +117,25 @@ process_exit (void)
   uint32_t *pd;
 
   if (cur->pagedir!=NULL) printf("%s: exit(%d)\n",cur->name,cur->exit_status);
+
+  while(!list_empty(&cur->fd_list)){
+    struct list_elem* e=list_pop_front(&cur->fd_list);
+    struct file_descriptor* desc=list_entry(e,struct file_descriptor,elem);
+
+    lock_acquire(&filesys_lock);
+    file_close(desc->file);
+    lock_release(&filesys_lock);
+
+    free(desc);
+  }
+
+  if(cur->exec_file!=NULL){
+    lock_acquire(&filesys_lock);
+    file_allow_write(cur->exec_file);
+    file_close(cur->exec_file);
+    lock_release(&filesys_lock);
+    cur->exec_file=NULL;
+  }
 
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
@@ -248,11 +268,15 @@ load (const char *file_name, void (**eip) (void), void **esp)
   prog_name_token=strtok_r(prog_name," ",&save_ptr);
   if(prog_name_token==NULL) goto done;
 
-  /* Open executable file. */
+/* Open executable file. */
   file = filesys_open (prog_name_token);
+
+  file_deny_write (file);
+  t->exec_file = file;
+
   if (file == NULL) 
     {
-      printf ("load: %s: open failed\n", file_name);
+      printf ("load: %s: open failed\n", prog_name_token);
       goto done; 
     }
 
@@ -337,9 +361,10 @@ load (const char *file_name, void (**eip) (void), void **esp)
 
   success = true;
 
- done:
-  /* We arrive here whether the load is successful or not. */
-  file_close (file);
+done:
+/* We arrive here whether the load is successful or not. */
+  if (!success && file!=NULL)
+    file_close (file);
   return success;
 }
 

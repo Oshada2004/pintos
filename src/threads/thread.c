@@ -41,6 +41,8 @@ static struct thread *initial_thread;
 /* Lock used by allocate_tid(). */
 static struct lock tid_lock;
 
+struct lock filesys_lock;
+
 /* Stack frame for kernel_thread(). */
 struct kernel_thread_frame 
   {
@@ -178,6 +180,8 @@ void
 thread_init (void) 
 {
   ASSERT (intr_get_level () == INTR_OFF);
+
+  struct lock filesys_lock;
 
   lock_init (&tid_lock);
   list_init (&ready_list);
@@ -643,6 +647,12 @@ init_thread (struct thread *t, const char *name, int priority)
   t->priority = priority;
   t->magic=THREAD_MAGIC;
   t->exit_status=0;
+
+  #ifdef USERPROG
+    list_init(&t->fd_list);
+    t->next_fd=2;
+    t->exec_file=NULL;
+  #endif
 
   t->base_priority=priority;
   t->wait_on_lock=NULL;
