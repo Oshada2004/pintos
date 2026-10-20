@@ -1,5 +1,5 @@
 Copying tests/filesys/base/lg-full to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/YkpMdkBgvg.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/l6zkAfxwhW.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
@@ -9,7 +9,7 @@ Kernel command line: -q -f extract run lg-full
 Pintos booting with 3,968 kB RAM...
 367 pages available in kernel pool.
 367 pages available in user pool.
-Calibrating timer...  157,081,600 loops/s.
+Calibrating timer...  78,540,800 loops/s.
 ide0: unexpected interrupt
 hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
 hda1: 206 sectors (103 kB), Pintos OS kernel (20)
@@ -35,11 +35,11 @@ Executing 'lg-full':
 (lg-full) end
 lg-full: exit(0)
 Execution of 'lg-full' complete.
-Timer: 87 ticks
-Thread: 41 idle ticks, 32 kernel ticks, 15 user ticks
+Timer: 83 ticks
+Thread: 43 idle ticks, 26 kernel ticks, 14 user ticks
 hda2 (filesys): 235 reads, 452 writes
 hda3 (scratch): 73 reads, 2 writes
-Console: 1121 characters output
+Console: 1120 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

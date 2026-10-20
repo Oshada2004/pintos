@@ -1,6 +1,6 @@
 Copying tests/userprog/open-twice to scratch partition...
 Copying ../../tests/userprog/sample.txt to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/1PTPNUhNUs.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/t3tkI5o9Zx.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
@@ -32,8 +32,8 @@ Executing 'open-twice':
 (open-twice) end
 open-twice: exit(0)
 Execution of 'open-twice' complete.
-Timer: 67 ticks
-Thread: 35 idle ticks, 30 kernel ticks, 3 user ticks
+Timer: 68 ticks
+Thread: 38 idle ticks, 27 kernel ticks, 3 user ticks
 hda2 (filesys): 96 reads, 154 writes
 hda3 (scratch): 73 reads, 2 writes
 Console: 1064 characters output

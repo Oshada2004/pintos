@@ -1,11 +1,11 @@
 Copying tests/userprog/write-boundary to scratch partition...
 Copying ../../tests/userprog/sample.txt to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/2JE2buBCPi.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/CIiEniYHsh.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
 1
-LLooaaddiinngg.......................
+LLooaaddiinngg........................
 Kernel command line: -q -f extract run write-boundary
 Pintos booting with 3,968 kB RAM...
 367 pages available in kernel pool.
@@ -31,8 +31,8 @@ Executing 'write-boundary':
 (write-boundary) end
 write-boundary: exit(0)
 Execution of 'write-boundary' complete.
-Timer: 98 ticks
-Thread: 52 idle ticks, 42 kernel ticks, 4 user ticks
+Timer: 71 ticks
+Thread: 33 idle ticks, 36 kernel ticks, 2 user ticks
 hda2 (filesys): 89 reads, 161 writes
 hda3 (scratch): 76 reads, 2 writes
 Console: 1054 characters output

@@ -1,6 +1,6 @@
 Copying tests/userprog/wait-killed to scratch partition...
 Copying tests/userprog/child-bad to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/p7xwd_23Cz.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/VC4OfBvOmY.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
@@ -10,7 +10,7 @@ Kernel command line: -q -f extract run wait-killed
 Pintos booting with 3,968 kB RAM...
 367 pages available in kernel pool.
 367 pages available in user pool.
-Calibrating timer...  153,804,800 loops/s.
+Calibrating timer...  157,081,600 loops/s.
 ide0: unexpected interrupt
 hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
 hda1: 206 sectors (103 kB), Pintos OS kernel (20)
@@ -33,8 +33,8 @@ child-bad: exit(-1)
 (wait-killed) end
 wait-killed: exit(0)
 Execution of 'wait-killed' complete.
-Timer: 75 ticks
-Thread: 41 idle ticks, 31 kernel ticks, 3 user ticks
+Timer: 70 ticks
+Thread: 38 idle ticks, 32 kernel ticks, 1 user ticks
 hda2 (filesys): 129 reads, 290 writes
 hda3 (scratch): 141 reads, 2 writes
 Console: 1070 characters output

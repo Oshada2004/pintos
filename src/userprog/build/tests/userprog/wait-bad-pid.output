@@ -1,10 +1,10 @@
 Copying tests/userprog/wait-bad-pid to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/q9OLE9BT7g.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/Pk4dW3uviW.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
 1
-LLooaaddiinngg........................
+LLooaaddiinngg.......................
 Kernel command line: -q -f extract run wait-bad-pid
 Pintos booting with 3,968 kB RAM...
 367 pages available in kernel pool.
@@ -28,8 +28,8 @@ Executing 'wait-bad-pid':
 (wait-bad-pid) end
 wait-bad-pid: exit(0)
 Execution of 'wait-bad-pid' complete.
-Timer: 65 ticks
-Thread: 35 idle ticks, 29 kernel ticks, 1 user ticks
+Timer: 64 ticks
+Thread: 32 idle ticks, 31 kernel ticks, 1 user ticks
 hda2 (filesys): 64 reads, 146 writes
 hda3 (scratch): 70 reads, 2 writes
 Console: 960 characters output

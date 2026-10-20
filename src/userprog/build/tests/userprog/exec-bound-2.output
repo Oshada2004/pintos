@@ -1,10 +1,10 @@
 Copying tests/userprog/exec-bound-2 to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/lbPwLuwN5b.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/nPfV5HdfZ3.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
 1
-LLooaaddiinngg........................
+LLooaaddiinngg.......................
 Kernel command line: -q -f extract run exec-bound-2
 Pintos booting with 3,968 kB RAM...
 367 pages available in kernel pool.
@@ -27,8 +27,8 @@ Executing 'exec-bound-2':
 (exec-bound-2) begin
 exec-bound-2: exit(-1)
 Execution of 'exec-bound-2' complete.
-Timer: 69 ticks
-Thread: 36 idle ticks, 33 kernel ticks, 1 user ticks
+Timer: 65 ticks
+Thread: 33 idle ticks, 31 kernel ticks, 1 user ticks
 hda2 (filesys): 58 reads, 152 writes
 hda3 (scratch): 73 reads, 2 writes
 Console: 942 characters output

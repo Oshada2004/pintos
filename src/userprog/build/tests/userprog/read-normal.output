@@ -1,11 +1,11 @@
 Copying tests/userprog/read-normal to scratch partition...
 Copying ../../tests/userprog/sample.txt to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/UodCx49Kel.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/HJ0dFTezZH.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
 1
-LLooaaddiinngg.......................
+LLooaaddiinngg........................
 Kernel command line: -q -f extract run read-normal
 Pintos booting with 3,968 kB RAM...
 367 pages available in kernel pool.
@@ -33,8 +33,8 @@ Executing 'read-normal':
 (read-normal) end
 read-normal: exit(0)
 Execution of 'read-normal' complete.
-Timer: 89 ticks
-Thread: 47 idle ticks, 41 kernel ticks, 2 user ticks
+Timer: 72 ticks
+Thread: 39 idle ticks, 32 kernel ticks, 1 user ticks
 hda2 (filesys): 95 reads, 154 writes
 hda3 (scratch): 73 reads, 2 writes
 Console: 1128 characters output

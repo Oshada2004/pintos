@@ -1,6 +1,6 @@
 Copying tests/filesys/base/syn-write to scratch partition...
 Copying tests/filesys/base/child-syn-wrt to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/mFjcqbaAhH.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/8pgQzg6xYM.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
@@ -63,11 +63,11 @@ child-syn-wrt: exit(0)
 (syn-write) end
 syn-write: exit(0)
 Execution of 'syn-write' complete.
-Timer: 105 ticks
-Thread: 45 idle ticks, 41 kernel ticks, 19 user ticks
+Timer: 91 ticks
+Thread: 37 idle ticks, 30 kernel ticks, 24 user ticks
 hda2 (filesys): 552 reads, 342 writes
 hda3 (scratch): 155 reads, 2 writes
-Console: 2391 characters output
+Console: 2390 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

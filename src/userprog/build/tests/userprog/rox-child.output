@@ -1,6 +1,6 @@
 Copying tests/userprog/rox-child to scratch partition...
 Copying tests/userprog/child-rox to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/3D0f45Efu1.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/1REFjWvGdi.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
@@ -40,8 +40,8 @@ child-rox: exit(12)
 (rox-child) end
 rox-child: exit(0)
 Execution of 'rox-child' complete.
-Timer: 77 ticks
-Thread: 41 idle ticks, 31 kernel ticks, 5 user ticks
+Timer: 80 ticks
+Thread: 40 idle ticks, 34 kernel ticks, 6 user ticks
 hda2 (filesys): 134 reads, 310 writes
 hda3 (scratch): 150 reads, 2 writes
 Console: 1263 characters output

@@ -1,6 +1,6 @@
 Copying tests/userprog/close-normal to scratch partition...
 Copying ../../tests/userprog/sample.txt to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/5XgjUPcta9.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/XcyRGIz_gI.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
@@ -32,8 +32,8 @@ Executing 'close-normal':
 (close-normal) end
 close-normal: exit(0)
 Execution of 'close-normal' complete.
-Timer: 69 ticks
-Thread: 35 idle ticks, 31 kernel ticks, 3 user ticks
+Timer: 67 ticks
+Thread: 34 idle ticks, 30 kernel ticks, 3 user ticks
 hda2 (filesys): 87 reads, 154 writes
 hda3 (scratch): 73 reads, 2 writes
 Console: 1072 characters output

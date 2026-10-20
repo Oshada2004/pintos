@@ -1,5 +1,5 @@
 Copying tests/userprog/write-stdin to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/fscRkW9XVs.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/OB8ZRk5DAT.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
@@ -28,8 +28,8 @@ Executing 'write-stdin':
 (write-stdin) end
 write-stdin: exit(0)
 Execution of 'write-stdin' complete.
-Timer: 83 ticks
-Thread: 42 idle ticks, 40 kernel ticks, 2 user ticks
+Timer: 66 ticks
+Thread: 34 idle ticks, 32 kernel ticks, 0 user ticks
 hda2 (filesys): 64 reads, 148 writes
 hda3 (scratch): 71 reads, 2 writes
 Console: 953 characters output
