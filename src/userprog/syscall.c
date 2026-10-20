@@ -83,7 +83,7 @@ syscall_handler (struct intr_frame *f UNUSED){
 
     case SYS_EXEC:
       {
-        validate_buffer (f->esp+4, sizeof(int));
+        validate_buffer (f->esp+4, sizeof(char*));
         const char *cmd_line= *(const char**)(f->esp+4);
 
         validate_string(cmd_line);

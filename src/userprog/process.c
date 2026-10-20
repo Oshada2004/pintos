@@ -86,7 +86,11 @@ process_execute (const char *file_name)
 
   sema_down(&cp->sema_load);
 
-  if(!cp->loaded) return TID_ERROR;
+  if(!cp->loaded){
+    list_remove(&cp->elem);
+    free(cp);
+    return TID_ERROR;
+  }
 
   return tid;
 }
@@ -132,11 +136,13 @@ start_process (void *file_name_)
     cur->cp->loaded=success;
     sema_up(&cur->cp->sema_load);
   }
-  
-  if (!success) 
-    thread_exit ();
 
-  /* Start the user process by simulating a return from an
+  if (!success){
+    cur->exit_status=-1;  /* Explicitly set exit_status to -1 on load failure */
+    thread_exit ();
+  }
+
+    /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
      threads/intr-stubs.S).  Because intr_exit takes all of its
      arguments on the stack in the form of a `struct intr_frame',
@@ -220,15 +226,12 @@ process_exit (void)
     else sema_up(&cur->cp->sema_wait);
   }
 
-  e=list_begin(&cur->children);
-  while(e!=list_end(&cur->children)){
-    struct list_elem* next=list_next(e);
+  while(!list_empty(&cur->children)){
+    struct list_elem* e=list_pop_front(&cur->children);
     struct child_process* child=list_entry(e,struct child_process,elem);
 
     if(child->has_waited) free(child);
     else child->orphan=true;
-
-    e=next;
   }
 
   /* Destroy the current process's page directory and switch back
@@ -365,14 +368,14 @@ load (const char *file_name, void (**eip) (void), void **esp)
 /* Open executable file. */
   file = filesys_open (prog_name_token);
 
-  file_deny_write (file);
-  t->exec_file = file;
-
   if (file == NULL) 
     {
       printf ("load: %s: open failed\n", prog_name_token);
       goto done; 
     }
+
+  file_deny_write (file);
+  t->exec_file = file;
 
   /* Read and verify executable header. */
   if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
@@ -456,9 +459,13 @@ load (const char *file_name, void (**eip) (void), void **esp)
   success = true;
 
 done:
-/* We arrive here whether the load is successful or not. */
-  if (!success && file!=NULL)
-    file_close (file);
+  /* We arrive here whether the load is successful or not. */
+  if (!success && file != NULL)
+    {
+      file_allow_write (file);
+      file_close (file);
+      t->exec_file = NULL;
+    }
   return success;
 }
 
