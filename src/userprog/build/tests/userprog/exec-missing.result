@@ -1,57 +1,9 @@
 FAIL
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (exec-missing) begin
-  load: no-such-file: open failed
-  (exec-missing) exec("no-such-file"): -1
-  no-such-file: exit(-1)
-  (exec-missing) end
-  exec-missing: exit(0)
-Differences in `diff -u' format:
-  (exec-missing) begin
-- load: no-such-file: open failed
-- (exec-missing) exec("no-such-file"): -1
-- no-such-file: exit(-1)
-- (exec-missing) end
-- exec-missing: exit(0)
-+ exec-missing: exit(-1)
-Acceptable output:
-  (exec-missing) begin
-  load: no-such-file: open failed
-  no-such-file: exit(-1)
-  (exec-missing) exec("no-such-file"): -1
-  (exec-missing) end
-  exec-missing: exit(0)
-Differences in `diff -u' format:
-  (exec-missing) begin
-- load: no-such-file: open failed
-- no-such-file: exit(-1)
-- (exec-missing) exec("no-such-file"): -1
-- (exec-missing) end
-- exec-missing: exit(0)
-+ exec-missing: exit(-1)
-Acceptable output:
-  (exec-missing) begin
-  (exec-missing) exec("no-such-file"): -1
-  (exec-missing) end
-  exec-missing: exit(0)
-Differences in `diff -u' format:
-  (exec-missing) begin
-- (exec-missing) exec("no-such-file"): -1
-- (exec-missing) end
-- exec-missing: exit(0)
-+ exec-missing: exit(-1)
-Acceptable output:
-  (exec-missing) begin
-  load: no-such-file: open failed
-  (exec-missing) exec("no-such-file"): -1
-  (exec-missing) end
-  exec-missing: exit(0)
-Differences in `diff -u' format:
-  (exec-missing) begin
-- load: no-such-file: open failed
-- (exec-missing) exec("no-such-file"): -1
-- (exec-missing) end
-- exec-missing: exit(0)
-+ exec-missing: exit(-1)
+Kernel panic in run: PANIC at ../../filesys/file.c:121 in file_deny_write(): assertion `file != NULL' failed.
+Call stack: 0xc002a51d 0xc002f4f4 0xc002d029 0xc002cc05 0xc0021af5
+Translation of call stack:
+0xc002a51d: debug_panic (.../../lib/kernel/debug.c:38)
+0xc002f4f4: file_deny_write (.../../../filesys/file.c:122)
+0xc002d029: load (...../userprog/process.c:368)
+0xc002cc05: start_process (...../userprog/process.c:126)
+0xc0021af5: kernel_thread (..../../threads/thread.c:607)

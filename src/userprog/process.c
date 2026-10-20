@@ -18,6 +18,8 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 #include "threads/thread.h"
+#include "threads/malloc.h"
+#include "threads/synch.h"
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
@@ -52,13 +54,40 @@ process_execute (const char *file_name)
 
   real_name=strtok_r(prog_name," ",&save_ptr);
 
+  struct child_process* cp=malloc(sizeof(struct child_process));
+  if(cp==NULL){
+    palloc_free_page(fn_copy);
+    palloc_free_page(prog_name);
+    return TID_ERROR;
+  }
+
+  cp->exit_status=-1;
+  cp->loaded=false;
+  cp->has_waited=false;
+  cp->orphan=false;
+  sema_init(&cp->sema_load,0);
+  sema_init(&cp->sema_wait,0);
+
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (real_name, PRI_DEFAULT, start_process, fn_copy);
 
   palloc_free_page(prog_name);
 
   if (tid == TID_ERROR)
-    palloc_free_page (fn_copy); 
+  {
+    palloc_free_page (fn_copy);
+    free(cp);
+    return TID_ERROR;
+  }
+  
+  cp->pid = tid;
+  struct thread* cur=thread_current();
+  list_push_back(&cur->children,&cp->elem);
+
+  sema_down(&cp->sema_load);
+
+  if(!cp->loaded) return TID_ERROR;
+
   return tid;
 }
 
@@ -71,6 +100,24 @@ start_process (void *file_name_)
   struct intr_frame if_;
   bool success;
 
+  struct thread* cur=thread_current();
+
+  enum intr_level old_level=intr_disable();
+  struct list_elem *e;
+  for (e=list_begin(&all_list); e!=list_end(&all_list); e=list_next(e)){
+    struct thread *t=list_entry(e,struct thread,allelem);
+    struct list_elem *ce;
+    for(ce=list_begin(&t->children); ce!=list_end(&t->children); ce=list_next(ce)){
+      struct child_process *child=list_entry(ce,struct child_process,elem);
+      if(child->pid==cur->tid){
+        cur->cp=child;
+        break;
+      }
+    }
+    if(cur->cp!=NULL) break;
+  }
+  intr_set_level(old_level);
+
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
   if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
@@ -80,6 +127,12 @@ start_process (void *file_name_)
 
   /* If load failed, quit. */
   palloc_free_page (file_name);
+
+  if(cur->cp!=NULL){
+    cur->cp->loaded=success;
+    sema_up(&cur->cp->sema_load);
+  }
+  
   if (!success) 
     thread_exit ();
 
@@ -105,8 +158,30 @@ start_process (void *file_name_)
 int
 process_wait (tid_t child_tid UNUSED) 
 {
-  while (thread_get_by_tid(child_tid)!=NULL) thread_yield ();
-  return -1;
+  struct thread* cur=thread_current();
+  struct child_process* cp=NULL;
+  struct list_elem* e;
+
+  for(e=list_begin(&cur->children); e!=list_end(&cur->children); e=list_next(e)){
+    struct child_process* child=list_entry(e,struct child_process,elem);
+    if(child->pid==child_tid){
+      cp=child;
+      break;
+    }
+  }
+
+  if(cp==NULL || cp->has_waited) return -1;
+
+  cp->has_waited=true;
+
+  sema_down(&cp->sema_wait);
+
+  int status=cp->exit_status;
+
+  list_remove(&cp->elem);
+  free(cp);
+
+  return status;
 }
 
 /* Free the current process's resources. */
@@ -115,6 +190,8 @@ process_exit (void)
 {
   struct thread *cur = thread_current ();
   uint32_t *pd;
+
+  struct list_elem* e;
 
   if (cur->pagedir!=NULL) printf("%s: exit(%d)\n",cur->name,cur->exit_status);
 
@@ -135,6 +212,23 @@ process_exit (void)
     file_close(cur->exec_file);
     lock_release(&filesys_lock);
     cur->exec_file=NULL;
+  }
+
+  if(cur->cp!=NULL){
+    cur->cp->exit_status=cur->exit_status;
+    if(cur->cp->orphan) free(cur->cp);
+    else sema_up(&cur->cp->sema_wait);
+  }
+
+  e=list_begin(&cur->children);
+  while(e!=list_end(&cur->children)){
+    struct list_elem* next=list_next(e);
+    struct child_process* child=list_entry(e,struct child_process,elem);
+
+    if(child->has_waited) free(child);
+    else child->orphan=true;
+
+    e=next;
   }
 
   /* Destroy the current process's page directory and switch back
@@ -234,7 +328,7 @@ struct Elf32_Phdr
 #define PF_W 2          /* Writable. */
 #define PF_R 4          /* Readable. */
 
-static bool setup_stack (void **esp, char* cmdline);
+static bool setup_stack (void **esp, const char* cmdline);
 static bool validate_segment (const struct Elf32_Phdr *, struct file *);
 static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
                           uint32_t read_bytes, uint32_t zero_bytes,
@@ -479,7 +573,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 /* Create a minimal stack by mapping a zeroed page at the top of
    user virtual memory. */
 static bool
-setup_stack (void **esp,char *cmdline)
+setup_stack (void **esp,const char *cmdline)
 {
   uint8_t *kpage;
   bool success = false;
@@ -491,12 +585,15 @@ setup_stack (void **esp,char *cmdline)
       if (success){
         *esp = PHYS_BASE;
 
+        char cmdline_copy[128];
+        strlcpy(cmdline_copy,cmdline,sizeof cmdline_copy);
+
         char* token;
         char* save_ptr;
         char* argv[128];
         int argc=0;
 
-        for(token=strtok_r(cmdline," ",&save_ptr); token!=NULL; token=strtok_r(NULL," ",&save_ptr)){
+        for(token=strtok_r(cmdline_copy," ",&save_ptr); token!=NULL; token=strtok_r(NULL," ",&save_ptr)){
           size_t len=strlen(token)+1;
           *esp-=len;
           memcpy(*esp,token,len);

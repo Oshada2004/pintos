@@ -1,5 +1,5 @@
 Copying tests/userprog/open-empty to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/Wv6_rmAM0U.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/uGScfCtkEG.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
@@ -28,8 +28,8 @@ Executing 'open-empty':
 (open-empty) end
 open-empty: exit(0)
 Execution of 'open-empty' complete.
-Timer: 64 ticks
-Thread: 33 idle ticks, 29 kernel ticks, 2 user ticks
+Timer: 68 ticks
+Thread: 34 idle ticks, 33 kernel ticks, 1 user ticks
 hda2 (filesys): 82 reads, 148 writes
 hda3 (scratch): 71 reads, 2 writes
 Console: 946 characters output

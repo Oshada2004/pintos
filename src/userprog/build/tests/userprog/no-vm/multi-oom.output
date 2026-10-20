@@ -1,10 +1,10 @@
 Copying tests/userprog/no-vm/multi-oom to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/UBlndjDgvO.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/f58ry4SxzM.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
 1
-LLooaaddiinngg.......................
+LLooaaddiinngg........................
 Kernel command line: -q -f extract run multi-oom
 Pintos booting with 3,968 kB RAM...
 367 pages available in kernel pool.
@@ -26,12 +26,62 @@ Erasing ustar archive...
 Executing 'multi-oom':
 (multi-oom) begin
 multi-oom: exit(-1)
-Execution of 'multi-oom' complete.
-Timer: 63 ticks
-Thread: 33 idle ticks, 30 kernel ticks, 0 user ticks
-hda2 (filesys): 66 reads, 170 writes
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(-1)
+multi-oom: exit(0)
+multi-oom: exit(0)
+multi-oom: exit(60)
+Kernel PANIC at ../../filesys/inode.c:336 in inode_allow_write(): assertion `inode->deny_write_cnt <= inode->open_cnt' failed.
+Call stack: 0xc002a51d 0xc00301ef 0xc002f568 0xc002ce2e 0xc0021483 0xc002cc5c 0xc0021af5.
+The `backtrace' program can make call stacks useful.
+Read "Backtraces" in the "Debugging Tools" chapter
+of the Pintos documentation for more information.
+Timer: 412 ticks
+Thread: 218 idle ticks, 49 kernel ticks, 145 user ticks
+hda2 (filesys): 15226 reads, 170 writes
 hda3 (scratch): 82 reads, 2 writes
-Console: 924 characters output
+Console: 2185 characters output
 Keyboard: 0 keys pressed
-Exception: 0 page faults
+Exception: 32 page faults
 Powering off...

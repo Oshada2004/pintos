@@ -37,6 +37,18 @@ struct file_descriptor{
    struct list_elem elem;
 };
 
+struct child_process
+  {
+    tid_t pid;
+    int exit_status;
+    bool loaded;
+    bool has_waited;
+    bool orphan;
+    struct semaphore sema_load;
+    struct semaphore sema_wait;
+    struct list_elem elem;
+  };
+
 /* A kernel thread or user process.
 
    Each thread structure is stored in its own 4 kB page.  The
@@ -125,6 +137,9 @@ struct thread
     struct list fd_list;
     int next_fd;
     struct file* exec_file;
+    
+    struct list children;
+    struct child_process* cp;
 #endif
 
     /* Owned by thread.c. */
@@ -135,6 +150,8 @@ struct thread
    If true, use multi-level feedback queue scheduler.
    Controlled by kernel command-line option "-o mlfqs". */
 extern bool thread_mlfqs;
+
+extern struct list all_list;
 
 void thread_test_preemption(void);
 

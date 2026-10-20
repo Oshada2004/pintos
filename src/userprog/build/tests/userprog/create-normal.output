@@ -1,10 +1,10 @@
 Copying tests/userprog/create-normal to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/dibguztXZi.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/nrg1jENa9e.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
 1
-LLooaaddiinngg........................
+LLooaaddiinngg.......................
 Kernel command line: -q -f extract run create-normal
 Pintos booting with 3,968 kB RAM...
 367 pages available in kernel pool.
@@ -30,7 +30,7 @@ Executing 'create-normal':
 create-normal: exit(0)
 Execution of 'create-normal' complete.
 Timer: 66 ticks
-Thread: 33 idle ticks, 31 kernel ticks, 2 user ticks
+Thread: 34 idle ticks, 31 kernel ticks, 2 user ticks
 hda2 (filesys): 85 reads, 152 writes
 hda3 (scratch): 71 reads, 2 writes
 Console: 999 characters output

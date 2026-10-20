@@ -1,10 +1,10 @@
 Copying tests/filesys/base/sm-seq-block to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/exST_QfmRf.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/p2sg5JZqN6.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
 1
-LLooaaddiinngg.......................
+LLooaaddiinngg........................
 Kernel command line: -q -f extract run sm-seq-block
 Pintos booting with 3,968 kB RAM...
 367 pages available in kernel pool.
@@ -35,8 +35,8 @@ Executing 'sm-seq-block':
 (sm-seq-block) end
 sm-seq-block: exit(0)
 Execution of 'sm-seq-block' complete.
-Timer: 67 ticks
-Thread: 34 idle ticks, 31 kernel ticks, 2 user ticks
+Timer: 72 ticks
+Thread: 37 idle ticks, 32 kernel ticks, 3 user ticks
 hda2 (filesys): 120 reads, 191 writes
 hda3 (scratch): 73 reads, 2 writes
 Console: 1204 characters output

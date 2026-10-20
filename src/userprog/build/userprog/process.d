@@ -8,4 +8,4 @@ userprog/process.o: ../../userprog/process.c ../../userprog/process.h \
  ../../userprog/tss.h ../../filesys/directory.h ../../devices/block.h \
  ../../filesys/file.h ../../filesys/off_t.h ../../filesys/filesys.h \
  ../../threads/flags.h ../../threads/init.h ../../threads/interrupt.h \
- ../../threads/palloc.h ../../threads/vaddr.h
+ ../../threads/palloc.h ../../threads/vaddr.h ../../threads/malloc.h

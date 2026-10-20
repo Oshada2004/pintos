@@ -1,10 +1,10 @@
 Copying tests/userprog/halt to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/xcf1cbfEMm.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/V6o8ThWZTg.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
 1
-LLooaaddiinngg........................
+LLooaaddiinngg.......................
 Kernel command line: -q -f extract run halt
 Pintos booting with 3,968 kB RAM...
 367 pages available in kernel pool.
@@ -25,8 +25,8 @@ Putting 'halt' into the file system...
 Erasing ustar archive...
 Executing 'halt':
 (halt) begin
-Timer: 63 ticks
-Thread: 32 idle ticks, 30 kernel ticks, 1 user ticks
+Timer: 66 ticks
+Thread: 37 idle ticks, 29 kernel ticks, 0 user ticks
 hda2 (filesys): 64 reads, 146 writes
 hda3 (scratch): 70 reads, 2 writes
 Console: 849 characters output

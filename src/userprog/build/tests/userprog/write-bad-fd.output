@@ -1,5 +1,5 @@
 Copying tests/userprog/write-bad-fd to scratch partition...
-qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/jiHhGZa71k.dsk -m 4 -net none -nographic -monitor null
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/tX49tHOwcp.dsk -m 4 -net none -nographic -monitor null
 c[?7l[2J[0mSeaBIOS (version 1.17.0-debian-1.17.0-1ubuntu1)
 Booting from Hard Disk...
 PPiinnttooss  hhddaa1
@@ -28,8 +28,8 @@ Executing 'write-bad-fd':
 (write-bad-fd) end
 write-bad-fd: exit(0)
 Execution of 'write-bad-fd' complete.
-Timer: 66 ticks
-Thread: 32 idle ticks, 33 kernel ticks, 1 user ticks
+Timer: 67 ticks
+Thread: 34 idle ticks, 33 kernel ticks, 0 user ticks
 hda2 (filesys): 58 reads, 148 writes
 hda3 (scratch): 71 reads, 2 writes
 Console: 960 characters output

@@ -13,6 +13,7 @@
 #include "devices/input.h"
 #include "filesys/filesys.h"
 #include "filesys/file.h"
+#include "userprog/process.h"
 
 static void syscall_handler (struct intr_frame *);
 static void sys_exit (int status);
@@ -79,6 +80,28 @@ syscall_handler (struct intr_frame *f UNUSED){
       validate_buffer(f->esp+4,sizeof(int));
       sys_exit(*(int*) (f->esp+4));
       break;
+
+    case SYS_EXEC:
+      {
+        validate_buffer (f->esp+4, sizeof(int));
+        const char *cmd_line= *(const char**)(f->esp+4);
+
+        validate_string(cmd_line);
+
+        lock_acquire(&filesys_lock);
+        f->eax=process_execute(cmd_line);
+        lock_release(&filesys_lock);
+        break;
+      }
+
+    case SYS_WAIT:
+      {
+        validate_buffer(f->esp+4,sizeof(int));
+        tid_t pid= *(tid_t*)(f->esp+4);
+
+        f->eax=process_wait(pid);
+        break;
+      }
 
     case SYS_CREATE:
       {
